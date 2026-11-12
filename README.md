@@ -14,7 +14,7 @@ Open `index.html` in a modern browser. No installation, build or API keys are re
 4. Under **Custom domains**, add `noticeboardcreator.starfallworks.com`.
 5. Future pushes to `main` trigger automatic deployments.
 
-## Version 1.1\n\nThe wooden board now uses deterministic layered timber rendering with fine grain, plank seams, knots, scratches, aging and subtle vignette shading. It works offline without image downloads. Environment placement (tavern, guild hall, town square) remains planned for a later release.\n\n## Features
+## Version 1.2\n\nNew: upload a photographic wood image (JPG, PNG or WebP) from your computer and choose a lettering style per notice: handwritten quill, formal proclamation or rustic print. The uploaded wood is used in canvas preview and exports without sending the file to a server. Wood image selection is session-only and is not embedded in saved JSON; reselect it when reopening a project. Lettering uses Google Fonts when available with local fallback fonts.\n\n## Version 1.1\n\nThe wooden board now uses deterministic layered timber rendering with fine grain, plank seams, knots, scratches, aging and subtle vignette shading. It works offline without image downloads. Environment placement (tavern, guild hall, town square) remains planned for a later release.\n\n## Features
 
 - Weathered oak, walnut and ancient timber styles
 - Multiple editable notices with type, title, text and footer
