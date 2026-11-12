@@ -14,7 +14,7 @@ Open `index.html` in a modern browser. No installation, build or API keys are re
 4. Under **Custom domains**, add `noticeboardcreator.starfallworks.com`.
 5. Future pushes to `main` trigger automatic deployments.
 
-## Features
+## Version 1.1\n\nThe wooden board now uses deterministic layered timber rendering with fine grain, plank seams, knots, scratches, aging and subtle vignette shading. It works offline without image downloads. Environment placement (tavern, guild hall, town square) remains planned for a later release.\n\n## Features
 
 - Weathered oak, walnut and ancient timber styles
 - Multiple editable notices with type, title, text and footer
