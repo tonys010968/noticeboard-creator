@@ -28,27 +28,45 @@ c.shadowBlur=W*.013;
 c.shadowOffsetX=W*.008;
 c.shadowOffsetY=H*.013;
 const paper={pristine:['#f5eacb','#e8d8b2'],aged:['#e5cf9f','#aa7e4e'],weathered:['#dfc39a','#96734d'],torn:['#e6cda2','#b28d5f'],tattered:['#d4b184','#80603e'],stained:['#e4c79a','#ad8558'],water:['#d5c5a8','#97856c'],soiled:['#c6ad88','#75634c'],blood:['#e4cba6','#b08b65'],patched:['#ddc49a','#9c7c55'],cream:['#eee0b5','#b29a6d'],tan:['#d7b983','#9a7145'],pale:['#f2e7c8','#b5a37f']}[n.paper]||['#eee0b5','#b29a6d'];
-const rough=['torn','tattered'].includes(n.paper)?(n.paper==='tattered'?26:17):5;
-const grad=c.createLinearGradient(-w/2,-h/2,w/2,h/2);
-grad.addColorStop(0,paper[0]);
-grad.addColorStop(.55,paper[0]);
-grad.addColorStop(1,paper[1]);
-c.fillStyle=grad;
+// Edge contour combines broad missing chunks with tiny fiber irregularities.
+// The paper silhouette is also the clipping boundary for all texture layers.
+const damaged = ['torn', 'tattered'].includes(n.paper);
+const tattered = n.paper === 'tattered';
+const edgeSeed = i * 73 + 31;
+const edgeNoise = (side, t) => {
+  const coarse = Math.sin(t * 11 + side * 2.1) * 0.38
+    + Math.sin(t * 23 + side * 4.8) * 0.20;
+  const fibers = Math.sin(t * 117 + side * 7.3) * 0.10
+    + Math.sin(t * 211 + side * 1.8) * 0.06;
+  const bite1 = Math.max(0, 1 - Math.abs(t - (0.22 + side * 0.11)) / 0.07);
+  const bite2 = Math.max(0, 1 - Math.abs(t - (0.75 - side * 0.09)) / 0.05);
+  const depth = Math.min(w, h) * (tattered ? 0.072 : 0.048);
+  return damaged ? depth * (0.5 + coarse + fibers + bite1 * 2.1 + bite2 * (tattered ? 2.4 : 1.2)) : 2 * fibers;
+};
+const edgeSteps = 110;
+const halfW = w / 2;
+const halfH = h / 2;
 c.beginPath();
-c.moveTo(-w/2+5,-h/2);
-for(let a=0;
-a<=10;
-a++){const xx=-w/2+a*w/10;
-c.lineTo(xx,-h/2+(rng(i*200+a)-.5)*rough*2)}for(let a=0;
-a<=10;
-a++){const yy=-h/2+a*h/10;
-c.lineTo(w/2+(rng(i*220+a)-.5)*rough*2,yy)}for(let a=10;
-a>=0;
-a--){const xx=-w/2+a*w/10;
-c.lineTo(xx,h/2+(rng(i*230+a)-.5)*rough*2)}for(let a=10;
-a>=0;
-a--){const yy=-h/2+a*h/10;
-c.lineTo(-w/2+(rng(i*240+a)-.5)*rough*2,yy)}c.closePath();
+for (let step = 0; step <= edgeSteps; step++) {
+  const t = step / edgeSteps;
+  const px = -halfW + t * w;
+  const py = -halfH + edgeNoise(0, t);
+  if (step === 0) c.moveTo(px, py);
+  else c.lineTo(px, py);
+}
+for (let step = 0; step <= edgeSteps; step++) {
+  const t = step / edgeSteps;
+  c.lineTo(halfW - edgeNoise(1, t), -halfH + t * h);
+}
+for (let step = 0; step <= edgeSteps; step++) {
+  const t = step / edgeSteps;
+  c.lineTo(halfW - t * w, halfH - edgeNoise(2, t));
+}
+for (let step = 0; step <= edgeSteps; step++) {
+  const t = step / edgeSteps;
+  c.lineTo(-halfW + edgeNoise(3, t), halfH - t * h);
+}
+c.closePath();
 c.fill();
 c.shadowColor='transparent';
 c.strokeStyle='#765b35';
