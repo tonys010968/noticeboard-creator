@@ -259,7 +259,8 @@ if($('boardTitle').value.trim())c.fillText($('boardTitle').value,W/2,H*.085);
 c.shadowBlur=0;
 notices.forEach((n,i)=>drawPaper(c,n,showSelection?i:-999));
 return target}
-function redraw(){render()}function list(){const el=$('noticeList');
+function redraw(){render()}
+window.refreshParchmentBoard = redraw;function list(){const el=$('noticeList');
 el.innerHTML='';
 notices.forEach((n,i)=>{const div=document.createElement('div');
 div.className='notice-item';
