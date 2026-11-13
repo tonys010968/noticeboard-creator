@@ -156,5 +156,13 @@ aside{max-height:none}
 <p class="hint">Drag a notice to reposition it. Click a notice to edit it. Exported images include the entire board. For best print results choose Print (4800px).</p>
 <p class="foot">Starfall Works · Free tabletop campaign tools · No account or upload required</p>
 </section>
-</main><script src="paper-textures.js"></script>
+</main><script>
+window.parchmentPhotos = {};
+for (const style of ['pristine','aged','weathered','torn','tattered','stained','water','soiled','blood','patched']) {
+  const image = new Image();
+  image.onload = () => { window.parchmentPhotos[style] = image; if (typeof window.refreshParchmentBoard === 'function') window.refreshParchmentBoard(); };
+  image.src = 'assets/parchment/' + style + '.png';
+}
+</script>
+<script src="paper-textures.js"></script>
 <script src="app.js"></script></body></html>
