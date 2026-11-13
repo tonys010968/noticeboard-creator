@@ -10,15 +10,31 @@
     return value - Math.floor(value);
   };
 
-  const stain = (ctx, x, y, radius, color, opacity) => {
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-    gradient.addColorStop(0, color.replace('ALPHA', String(opacity)));
-    gradient.addColorStop(0.55, color.replace('ALPHA', String(opacity * 0.45)));
-    gradient.addColorStop(1, color.replace('ALPHA', '0'));
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fill();
+  // Deterministic layered pigment: overlapping translucent patches, not a radial stamp.
+  const stain = (ctx, x, y, radius, color, opacity, seed) => {
+    ctx.save();
+    for (let layer = 0; layer < 5; layer++) {
+      const spread = radius * (0.42 + seeded(seed + layer * 11) * 0.72);
+      const ox = (seeded(seed + layer * 11 + 1) - 0.5) * radius;
+      const oy = (seeded(seed + layer * 11 + 2) - 0.5) * radius;
+      const gradient = ctx.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, spread);
+      gradient.addColorStop(0, color.replace('ALPHA', String(opacity * 0.35)));
+      gradient.addColorStop(0.45, color.replace('ALPHA', String(opacity * 0.17)));
+      gradient.addColorStop(0.82, color.replace('ALPHA', String(opacity * 0.08)));
+      gradient.addColorStop(1, color.replace('ALPHA', '0'));
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x + ox - spread, y + oy - spread, spread * 2, spread * 2);
+    }
+    // A few pigment specks collect around the irregular stain boundary.
+    for (let i = 0; i < 45; i++) {
+      const angle = seeded(seed + i * 5) * Math.PI * 2;
+      const distance = radius * (0.25 + seeded(seed + i * 5 + 1) * 0.9);
+      const px = x + Math.cos(angle) * distance;
+      const py = y + Math.sin(angle) * distance * 0.8;
+      ctx.fillStyle = color.replace('ALPHA', String(opacity * (0.05 + seeded(seed + i * 5 + 2) * 0.24)));
+      ctx.fillRect(px, py, 0.7 + seeded(seed + i * 5 + 3) * 3, 0.6 + seeded(seed + i * 5 + 4) * 2);
+    }
+    ctx.restore();
   };
 
   window.drawParchmentTexture = function drawParchmentTexture(ctx, notice, index, width, height) {
@@ -64,16 +80,16 @@
     }
 
     if (['stained', 'water', 'soiled', 'blood'].includes(style)) {
-      const count = style === 'blood' ? 15 : style === 'soiled' ? 22 : 7;
+      const count = style === 'blood' ? 8 : style === 'soiled' ? 13 : 4;
       for (let i = 0; i < count; i++) {
         const x = left + seeded(seed + i * 7) * width;
         const y = top + seeded(seed + i * 7 + 1) * height;
-        const radius = Math.min(width, height) * (0.045 + seeded(seed + i * 7 + 2) * 0.15);
+        const radius = Math.min(width, height) * (0.045 + seeded(seed + i * 7 + 2) * 0.18);
         const ink = style === 'blood' ? 'rgba(106,14,13,ALPHA)'
           : style === 'soiled' ? 'rgba(52,43,30,ALPHA)'
           : style === 'water' ? 'rgba(94,79,62,ALPHA)'
           : 'rgba(125,75,31,ALPHA)';
-        stain(ctx, x, y, radius, ink, style === 'blood' ? 0.42 : 0.22);
+        stain(ctx, x, y, radius, ink, style === 'blood' ? 0.38 : 0.24, seed + i * 43);
       }
     }
 
