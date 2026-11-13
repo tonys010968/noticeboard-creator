@@ -67,22 +67,25 @@ for (let step = 0; step <= edgeSteps; step++) {
   c.lineTo(-halfW + edgeNoise(3, t), halfH - t * h);
 }
 c.closePath();
-c.fill();
-c.shadowColor='transparent';
-c.strokeStyle='#765b35';
-c.lineWidth=2;
-c.stroke();
-c.save();
-c.clip();
 const photo = window.parchmentPhotos && window.parchmentPhotos[n.paper];
 if (photo && photo.complete && photo.naturalWidth) {
-  // Actual parchment photograph with alpha-masked tears and stains.
+  // Photographic paper is alpha-masked: holes and torn edges reveal the wood.
+  // Avoid the opaque procedural paper fill beneath the transparent image.
+  c.shadowColor = '#090602b8';
   c.drawImage(photo, -w / 2, -h / 2, w, h);
+  c.shadowColor = 'transparent';
 } else {
-  // Existing procedural texture remains a fallback for missing assets.
+  // Fallback retains support for older saved styles and missing photo assets.
+  c.fill();
+  c.shadowColor = 'transparent';
+  c.strokeStyle = '#765b35';
+  c.lineWidth = 2;
+  c.stroke();
+  c.save();
+  c.clip();
   window.drawParchmentTexture(c, n, i, w, h);
+  c.restore();
 }
-c.restore();
 c.globalAlpha=.12;
 for(let j=0;
 j<65;
