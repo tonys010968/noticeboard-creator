@@ -74,7 +74,14 @@ c.lineWidth=2;
 c.stroke();
 c.save();
 c.clip();
-window.drawParchmentTexture(c,n,i,w,h);
+const photo = window.parchmentPhotos && window.parchmentPhotos[n.paper];
+if (photo && photo.complete && photo.naturalWidth) {
+  // Actual parchment photograph with alpha-masked tears and stains.
+  c.drawImage(photo, -w / 2, -h / 2, w, h);
+} else {
+  // Existing procedural texture remains a fallback for missing assets.
+  window.drawParchmentTexture(c, n, i, w, h);
+}
 c.restore();
 c.globalAlpha=.12;
 for(let j=0;
